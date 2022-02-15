@@ -1,0 +1,33 @@
+.cart__item-total {
+    display: flex;
+}
+
+
+.cart__item-total {
+    display: flex;
+    justify-Content: space-between;
+    margin: 10px 30px
+}
+
+.cart__taxes {
+    display: flex;
+    justify-Content: space-between;
+    margin: 10px 30px
+}
+
+.cart__total {
+    display: flex;
+    justify-Content: space-between;
+    margin: 10px 30px
+}
+
+.cart__total h4{
+    margin: 0;
+}
+
+.checkout-btn {
+    background-color:#20CE88;
+    border-radius: 8px;
+    width: 85VW;
+    margin: 10px 10px
+}
