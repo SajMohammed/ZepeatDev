@@ -23,14 +23,8 @@ const Cart = () => {
   let totSellingPrice = 0;
   let taxAndCharges = 0;
   let totalP = 0;
-  let tempArray = []
   let partnerFirestoreId = "VXM509inNCe8tZEBz1RD";
-  let brandsFirestoreId = "iuu6AvatBJfqc9Mtn4Zj";
-
-  const productsCollectionRef = collection(
-    db,
-    `Partners/${partnerFirestoreId}/Brands-MoT/${brandsFirestoreId}/Products`
-  );
+  let brandFirestoreId = "";
 
   const handleToggleCart = (id) => {
     console.log(items.length);
@@ -39,8 +33,8 @@ const Cart = () => {
       setItems([]);
     } else {
       console.log(id);
-    //   setItems(items.slice(items.indexOf(id, 1)));
-      setItems([...items], items.splice(items.findIndex( v => v.id == id), 1));
+      setItems(items.slice(items.indexOf(id, 1)));
+    //   setItems([...items], items.splice(items.findIndex( v => v.id == id), 1));
       // setItems(items.filter(item => item.id != id));
     //   tempArray = items.filter( item => item.id != id);
     //   setItems(tempArray);
@@ -48,6 +42,9 @@ const Cart = () => {
   };
 
   useEffect(() => {
+    brandFirestoreId = localStorage.getItem("brandId");
+    const productsCollectionRef = collection(db, `Partners/${partnerFirestoreId}/Brands-MoT/${brandFirestoreId}/Products`);
+      console.log("inside Cart component :", brandFirestoreId)
     const getData = async () => {
       const q = query(
         productsCollectionRef,

@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Grid, Typography } from "@material-ui/core";
 import './brands.css';
 import Levis from "../../assets/levis.svg";
@@ -11,6 +11,9 @@ import Timberland from "../../assets/timberland.svg";
 import Brand from "./Brand";
 import motLayout from '../../assets/motLayout.svg';
 import { Link } from "react-router-dom";
+import { db } from "../../firebase-config";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import Cart from "../Cart/Cart";
 
 const items = [
     {id: 1, image:Levis},
@@ -22,10 +25,45 @@ const items = [
     
 ]
 
-const Brands = () => {
-
+const Brands = ({ partnerFirestoreId}) => {
+    let brandId;
     const [brand, setBrand] = useState(true);
     const [layout, setLayout] = useState(false);
+    const [brandFirestoreId, setBrandFirestoreId] = useState("");
+    const [clickedBrand, setClickedBrand] = useState();
+    const [brandsList, setBrandsList] = useState([]);
+
+  useEffect(() => {
+      
+      const getBrands = async () => {
+          const brandsCollectionRef = collection( db, `Partners/${partnerFirestoreId}/Brands-MoT` );
+          
+          const q = query(
+              brandsCollectionRef
+            //   where("BrandBID", "==", "100101")
+              );
+              const docSnap = await getDocs(q);
+              docSnap.forEach((doc) => {
+                
+                setBrandsList((prev) => [
+                    ...prev,
+                    {
+                        id: doc.id,
+                        image: doc.data().ImageURL
+                    }
+                ])
+            console.log(doc.data());
+            //All the brand details are fetched here and assigned to setBrandsList
+
+        })
+      
+    };
+    getBrands();
+  
+    return () => {
+      
+    }
+  }, [])
 
     const toggleBrand = () => {
         setBrand(true)
@@ -35,14 +73,20 @@ const Brands = () => {
     const toggleLayout = () => {
         setLayout(true)
         setBrand(false)
-
-        // if (layout)
-        //     setLayout(true)
-        // else
-        //     setBrand(false)
     }
 
+    
+    const handleBrandOnClick = (id) => {
+        
+        localStorage.setItem("brandId", `${id}`);
+        console.log("clicked Brand : ",id);
+    }
+    
+
+    
+
     return (
+        
         <div style={{ margin: "24px 26px" }}>
         <div className="brands__container-title" style={{ marginBottom:"32px"}}>
             
@@ -50,23 +94,10 @@ const Brands = () => {
             <h2 style={{color:'#20CE88', cursor:'pointer'}} onClick={toggleLayout}>Layout</h2>
         
         </div>
-        {/* { brand && 
-            <Grid container spacing={2}> 
-                {items.map((item) => (
-                    <Grid item key={item.id} xs={6}>
-                        <Brand image={item.image} />
-                    </Grid>
-                ))}
-            </Grid>
-        }
-        { layout && 
-            <h2>Layout</h2>
-
-        } */}
         { brand ?  <Grid container spacing={2}> 
-                {items.map((item) => (
+                {brandsList.map((item) => (
                     <Grid item key={item.id} xs={6}>
-                        <Link to="/cart"><Brand image={item.image} /></Link>
+                        <Link to="/cart"><Brand id={item.id} image={item.image} handleBrandOnClick={handleBrandOnClick} /></Link>
                     </Grid>
                 ))}
             </Grid> : 
@@ -76,6 +107,8 @@ const Brands = () => {
         }
         
         </div>
+        
+        
     );
 };
 

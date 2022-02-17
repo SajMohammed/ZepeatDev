@@ -11,7 +11,7 @@ const Home = () => {
 
   const [partnerFirestoreId, setPartnerFirestoreId] = useState("");
   useEffect(() => {
-    const getBrands = async () => {
+    const getPartner = async () => {
       const partnerCollectionRef = collection( db, "Partners" );
 
       const q = query(
@@ -21,21 +21,23 @@ const Home = () => {
       const docSnap = await getDocs(q);
         docSnap.forEach((doc) => {
           setPartnerFirestoreId(doc.id);
+          //Get rest of the Partner details here
         })
       
     };
-    getBrands();
+    getPartner();
   
     return () => {
       
     }
   }, [partnerFirestoreId])
   
+
   return (
     <Fragment>
       <Banner />
       <Loyalty />
-      <Brands />
+      <Brands partnerFirestoreId="VXM509inNCe8tZEBz1RD" />
       <TabButton />
     </Fragment>
   );
