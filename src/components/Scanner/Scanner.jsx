@@ -1,9 +1,9 @@
 import React from 'react';
 import BarcodeIcon from '../../assets/BarcodeIcon.svg';
 
-const ScannerTest = () => {
+const Scanner = ({toggleScanner}) => {
   return (
-    <div className="scanner__container" style={{backgroundColor:'#e2f9f0', margin:'20px 30px', padding:'16px 0px', borderRadius:'32px'}}>
+    <div className="scanner__container" onClick = {() => {toggleScanner(true)}} style={{backgroundColor:'#e2f9f0', margin:'20px 30px', padding:'16px 0px', borderRadius:'32px'}}>
         <div className="scanner__barcode">
             <img src={BarcodeIcon} alt="Barcode Icon" />
         </div>
@@ -12,4 +12,4 @@ const ScannerTest = () => {
   
   )};
 
-export default ScannerTest;
+export default Scanner;

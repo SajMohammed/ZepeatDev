@@ -9,7 +9,7 @@
     margin: 10px 30px
 }
 
-.cart__taxes {
+.cart__taxes, .cart__convenienceFee {
     display: flex;
     justify-Content: space-between;
     margin: 10px 30px
