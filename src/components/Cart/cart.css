@@ -31,3 +31,17 @@
     width: 85VW;
     margin: 10px 10px
 }
+
+/* .cart__isEmptyCard {
+    display:"flex";
+    justify-content:"center";
+    align-items:"center";
+    flex-direction:"column";
+
+    background-color:"#e2f9f0";
+    padding:"12px 55px";
+    border-radius:"32px";
+    box-shadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px 0px";
+    height:"300px";
+    
+} */

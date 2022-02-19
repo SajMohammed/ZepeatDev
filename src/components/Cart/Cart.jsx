@@ -7,6 +7,9 @@ import Scanner from "../Scanner/Scanner";
 import { db } from "../../firebase-config";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import BarcodeReader from "../BarcodeReader/BarcodeReader";
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // const items = [
 //   { id: 1, name: "Nivya Body Cream", category: "Self Grooming", price: "250" },
@@ -24,6 +27,7 @@ const Cart = () => {
   const [isQuantityChanged, setIsQuantityChanged] = useState(0);
   const [scanner, setScanner] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
+  const [cartSizeControl, setCartSizeControl] = useState(false);
 
   const [qtyKg, setqtyKg] = useState(0);
   const [qtyGm, setqtyGm] = useState(0);
@@ -69,6 +73,7 @@ const Cart = () => {
 
       docsSnap.forEach((doc) => {
         //let category = doc.data().Category;
+        if (items.length < 6){
           setItems((prevItems) => [
             ...prevItems,
             {
@@ -82,7 +87,9 @@ const Cart = () => {
               
             },
           ]);
-        
+        }else {
+          toast.error("Sorry, we only support 5 items for now!");
+        }
       });
     };
 
@@ -96,6 +103,9 @@ const Cart = () => {
       
       docsSnap.forEach((doc) => {
         //let category = doc.data().Category;
+        console.log(items.length, "length of items")
+        if (items.length < 6){
+          
           setItems((prevItems) => [
             ...prevItems,
             {
@@ -109,6 +119,9 @@ const Cart = () => {
               
             },
           ]);
+        }else {
+          toast.error("Sorry, we only support 5 items for now!");
+        }
         
       });
     };
@@ -187,35 +200,6 @@ const Cart = () => {
     // console.log(items);
   }
 
-//   const validateBarcode = (barcode) => {
-//     if (barcode.length === 10) {
-//       let a = barcode.substring(0, 4);
-//       let b = barcode.substring(4, 7);
-//       let c = barcode.substring(7, 10);
-//     }
-//     return a, b, c;
-//   };
-
-//   const groceryPriceCalculation = (a, b, c, MRP, SP) => {
-//     let MRP;
-//     let SP;
-//     let weight;
-//     if (MRP === SP) {
-//       kgPrice = MRP;
-//     } else {
-//       kgPrice = SP;
-//     }
-//     weight = Number(b) + (Number(c) / 1000);
-//     finalPrice = Number(weight) * Number(kgPrice);
-//   };
-
-//   const fmcgPriceCalculation = () => {
-//       if (MRP === SP) {
-
-//       }
-//   }
-  
-
     const toggleScanner = (value) => {
         setScanner(value);
     }
@@ -229,13 +213,21 @@ const Cart = () => {
     <>
       <Scanner toggleScanner={toggleScanner}/>
       {scanner && <BarcodeReader toggleScanner={toggleScanner} populateData={populateData}/>}
+      <ToastContainer />
       <Grid container justifyContent="center" spacing={1}>
         {items.map((item) => (
           <Grid item key={item.id} xs={12}>
             {<CartItem item={item} handleToggleCart={handleToggleCart} getQuantity={getQuantity} setIsQuantityChanged={setIsQuantityChanged}/>}
           </Grid>
         ))}
-      </Grid>
+      </Grid >
+
+      { items.length ? "" : <Grid container justifyContent="center" >
+        <div className="cart__isEmptyCard" style={{color:"#20CE88", backgroundColor:"#e2f9f0", padding:"12px 55px", borderRadius:'32px', boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px 0px", height:"300px", display:"flex", justifyContent:"center", alignItems:"center", flexDirection:"column" }}>
+          <ShoppingCartOutlinedIcon fontSize="large"></ShoppingCartOutlinedIcon>
+          <h2>Your cart is empty</h2>
+        </div>
+      </Grid>}
       <Grid conatianer style={{ margin: "30px 0px", backgroundColor:"#e2f9f0", padding:"12px 8px" }}>
         <div className="cart__item-total">
           <p style={{ margin: 0 }}>Item Total</p>
