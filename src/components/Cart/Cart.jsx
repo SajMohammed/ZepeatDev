@@ -1,15 +1,16 @@
-import { Button, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import CartItem from "./CartItem/CartItem";
 import "./cart.css";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import Scanner from "../Scanner/Scanner";
 import { db } from "../../firebase-config";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import BarcodeReader from "../BarcodeReader/BarcodeReader";
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CheckoutBtn from "./CheckoutBtn/CheckoutBtn";
+import PaymentSuccess from "./PaymentSuccess";
 
 // const items = [
 //   { id: 1, name: "Nivya Body Cream", category: "Self Grooming", price: "250" },
@@ -27,11 +28,11 @@ const Cart = () => {
   const [isQuantityChanged, setIsQuantityChanged] = useState(0);
   const [scanner, setScanner] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
-  const [cartSizeControl, setCartSizeControl] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const [qtyKg, setqtyKg] = useState(0);
   const [qtyGm, setqtyGm] = useState(0);
- 
+
   let totSellingPrice = 0;
   let taxAndCharges = 0;
   let totalP = 0;
@@ -46,16 +47,16 @@ const Cart = () => {
       setItems([]);
       setBarcodeData("");
       setConvenienceFee(0);
-      
     } else {
       console.log(id);
       setItems(items.slice(items.indexOf(id, 1)));
+      // setItems((item) => item.filter((item) => item.key !== id.key))
       setBarcodeData("");
       setConvenienceFee(0);
-    //   setItems([...items], items.splice(items.findIndex( v => v.id == id), 1));
+      //   setItems([...items], items.splice(items.findIndex( v => v.id == id), 1));
       // setItems(items.filter(item => item.id != id));
-    //   tempArray = items.filter( item => item.id != id);
-    //   setItems(tempArray);
+      //   tempArray = items.filter( item => item.id != id);
+      //   setItems(tempArray);
     }
   };
 
@@ -63,17 +64,20 @@ const Cart = () => {
     console.log("Barcode : ", barcodeData);
     brandFirestoreId = localStorage.getItem("brandId");
 
-    const productsCollectionRef = collection(db, `Partners/${partnerFirestoreId}/Brands-MoT/${brandFirestoreId}/Products`);   
+    const productsCollectionRef = collection(
+      db,
+      `Partners/${partnerFirestoreId}/Brands-MoT/${brandFirestoreId}/Products`
+    );
     const getData = async () => {
       const q = query(
         productsCollectionRef,
         where("BarcodeNumb", "==", `${barcodeData}`)
-        );
-        const docsSnap = await getDocs(q);
+      );
+      const docsSnap = await getDocs(q);
 
       docsSnap.forEach((doc) => {
         //let category = doc.data().Category;
-        if (items.length < 6){
+        if (items.length < 6) {
           setItems((prevItems) => [
             ...prevItems,
             {
@@ -83,11 +87,10 @@ const Cart = () => {
               MRP: doc.data().MRP,
               SellingPrice: doc.data().SellingPrice,
               ImageURL: doc.data().ImageURL,
-              Quantity:1
-              
+              Quantity: 1,
             },
           ]);
-        }else {
+        } else {
           toast.error("Sorry, we only support 5 items for now!");
         }
       });
@@ -98,14 +101,13 @@ const Cart = () => {
         productsCollectionRef,
         where("BarcodeNumb", "==", `${grocBarcode}`)
       );
-      
+
       const docsSnap = await getDocs(q);
-      
+
       docsSnap.forEach((doc) => {
         //let category = doc.data().Category;
-        console.log(items.length, "length of items")
-        if (items.length < 6){
-          
+        console.log(items.length, "length of items");
+        if (items.length < 6) {
           setItems((prevItems) => [
             ...prevItems,
             {
@@ -115,18 +117,16 @@ const Cart = () => {
               MRP: doc.data().MRP,
               SellingPrice: doc.data().SellingPrice,
               ImageURL: doc.data().ImageURL,
-              Quantity:1
-              
+              Quantity: 1,
             },
           ]);
-        }else {
+        } else {
           toast.error("Sorry, we only support 5 items for now!");
         }
-        
       });
     };
 
-    if( barcodeData.length === 10) {
+    if (barcodeData.length === 10) {
       let a = barcodeData.substring(0, 4);
       let b = barcodeData.substring(4, 7);
       setqtyKg(b);
@@ -135,7 +135,6 @@ const Cart = () => {
       setqtyGm(c);
       grocQtyGm = Number(c);
       getDataGrocery(a);
-
     } else {
       getData();
     }
@@ -148,38 +147,40 @@ const Cart = () => {
     let weight = 0;
     let finalGrocPrice = 0;
     let convenienceFee = 2;
-    console.log("V", qtyKg)
+    console.log("V", qtyKg);
     console.log(items);
-   // console.log("called on items change");
+    // console.log("called on items change");
     items.map((item) => {
-        console.log(item.Name, item.Quantity);
-        if (item.Category === "Groceries"){
-          console.log(item.MRP, item.SellingPrice)
-          if (item.MRP === item.SellingPrice) {
-            kgPrice = item.MRP;
-          } else {
-            kgPrice = item.SellingPrice;
-          }
-          console.log(kgPrice);
-
-          console.log("grocQtyKg", Number(grocQtyKg))
-          weight = Number(qtyKg) + (Number(qtyGm) / 1000);
-          finalGrocPrice = Number(weight) * Number(kgPrice);
-          console.log(weight, finalGrocPrice)
-          totSellingPrice += Number(finalGrocPrice * item.Quantity);
-          taxAndCharges = (0.18 * Number(totSellingPrice)).toFixed(2);
-          setConvenienceFee(2);
-          totalP = Number(totSellingPrice + Number(taxAndCharges) + Number(convenienceFee));
-
-        }else {
-
-          totSellingPrice += Number(item.SellingPrice * item.Quantity);
-          taxAndCharges = (0.18 * Number(totSellingPrice)).toFixed(2);
-          setConvenienceFee(2);
-          totalP = Number(totSellingPrice + Number(taxAndCharges) + Number(convenienceFee));
+      console.log(item.Name, item.Quantity);
+      if (item.Category === "Groceries") {
+        console.log(item.MRP, item.SellingPrice);
+        if (item.MRP === item.SellingPrice) {
+          kgPrice = item.MRP;
+        } else {
+          kgPrice = item.SellingPrice;
         }
-    //   setTaxAndCharge((prev) => prev + 10);
-    //   setTotalPrice(itemPrice + taxAndCharge);
+        console.log(kgPrice);
+
+        console.log("grocQtyKg", Number(grocQtyKg));
+        weight = Number(qtyKg) + Number(qtyGm) / 1000;
+        finalGrocPrice = Number(weight) * Number(kgPrice);
+        console.log(weight, finalGrocPrice);
+        totSellingPrice += Number(finalGrocPrice * item.Quantity);
+        taxAndCharges = (0.18 * Number(totSellingPrice)).toFixed(2);
+        setConvenienceFee(2);
+        totalP = Number(
+          totSellingPrice + Number(taxAndCharges) + Number(convenienceFee)
+        );
+      } else {
+        totSellingPrice += Number(item.SellingPrice * item.Quantity);
+        taxAndCharges = (0.18 * Number(totSellingPrice)).toFixed(2);
+        setConvenienceFee(2);
+        totalP = Number(
+          totSellingPrice + Number(taxAndCharges) + Number(convenienceFee)
+        );
+      }
+      //   setTaxAndCharge((prev) => prev + 10);
+      //   setTotalPrice(itemPrice + taxAndCharge);
     });
 
     setItemPrice(totSellingPrice.toFixed(2));
@@ -189,78 +190,129 @@ const Cart = () => {
     console.log(items);
   }, [items, isQuantityChanged]);
 
-  
   const getQuantity = (qty, id) => {
     // console.log(qty,id);
-    items.map((item)=>{
-        if (item.id == id) {
-            item.Quantity = qty;
-        }
-    })
-    // console.log(items);
-  }
-
-    const toggleScanner = (value) => {
-        setScanner(value);
-    }
-
-    const populateData = (data) => {
-        //console.log(data);
-        setBarcodeData(data);
+    items.map((item) => {
+      if (item.id == id) {
+        item.Quantity = qty;
       }
+    });
+    // console.log(items);
+  };
+
+  const toggleScanner = (value) => {
+    setScanner(value);
+  };
+
+  const populateData = (data) => {
+    //console.log(data);
+    setBarcodeData(data);
+  };
+  const handlePaymentSuccess = () => {
+    setPaymentSuccess(true);
+  };
 
   return (
     <>
-      <Scanner toggleScanner={toggleScanner}/>
-      {scanner && <BarcodeReader toggleScanner={toggleScanner} populateData={populateData}/>}
-      <ToastContainer />
-      <Grid container justifyContent="center" spacing={1}>
-        {items.map((item) => (
-          <Grid item key={item.id} xs={12}>
-            {<CartItem item={item} handleToggleCart={handleToggleCart} getQuantity={getQuantity} setIsQuantityChanged={setIsQuantityChanged}/>}
+      {paymentSuccess ? (
+        <div>
+          <Grid container justifyContent="center" spacing={1}>
+            {items.map((item) => (
+              <Grid item key={item.id} xs={12}>
+                {
+                  <CartItem
+                    item={item}
+                    handleToggleCart={handleToggleCart}
+                    getQuantity={getQuantity}
+                    setIsQuantityChanged={setIsQuantityChanged}
+                  />
+                }
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid >
+          <PaymentSuccess />
+        </div>
+      ) : (
+        <div>
+          <Scanner toggleScanner={toggleScanner} />
+          {scanner && (
+            <BarcodeReader
+              toggleScanner={toggleScanner}
+              populateData={populateData}
+            />
+          )}
+          <ToastContainer />
+          <Grid container justifyContent="center" spacing={1}>
+            {items.map((item) => (
+              <Grid item key={item.id} xs={12}>
+                {
+                  <CartItem
+                    item={item}
+                    handleToggleCart={handleToggleCart}
+                    getQuantity={getQuantity}
+                    setIsQuantityChanged={setIsQuantityChanged}
+                  />
+                }
+              </Grid>
+            ))}
+          </Grid>
 
-      { items.length ? "" : <Grid container justifyContent="center" >
-        <div className="cart__isEmptyCard" style={{color:"#20CE88", backgroundColor:"#e2f9f0", padding:"12px 55px", borderRadius:'32px', boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px 0px", height:"300px", display:"flex", justifyContent:"center", alignItems:"center", flexDirection:"column" }}>
-          <ShoppingCartOutlinedIcon fontSize="large"></ShoppingCartOutlinedIcon>
-          <h2>Your cart is empty</h2>
+          {items.length ? (
+            ""
+          ) : (
+            <Grid container justifyContent="center">
+              <div
+                className="cart__isEmptyCard"
+                style={{
+                  color: "#20CE88",
+                  backgroundColor: "#e2f9f0",
+                  padding: "12px 55px",
+                  borderRadius: "32px",
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px 0px",
+                  height: "300px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <ShoppingCartOutlinedIcon fontSize="large"></ShoppingCartOutlinedIcon>
+                <h2>Your cart is empty</h2>
+              </div>
+            </Grid>
+          )}
+          <Grid
+            conatianer
+            style={{
+              margin: "30px 0px",
+              backgroundColor: "#e2f9f0",
+              padding: "12px 8px",
+            }}
+          >
+            <div className="cart__item-total">
+              <p style={{ margin: 0 }}>Item Total</p>
+              <p style={{ margin: 0 }}>₹ {itemPrice}</p>
+            </div>
+            <div className="cart__taxes">
+              <p style={{ margin: 0 }}>Taxes and charges</p>
+              <p style={{ margin: 0 }}>₹ {taxAndCharge}</p>
+            </div>
+            <div className="cart__convenienceFee">
+              <p style={{ margin: 0 }}>Convenience Fee</p>
+              <p style={{ margin: 0 }}>₹ {convenienceFee}</p>
+            </div>
+            <div className="cart__total">
+              <h4>Total</h4>
+              <h4>₹ {totalPrice}</h4>
+            </div>
+          </Grid>
+          <CheckoutBtn
+            amount={totalPrice}
+            items={items}
+            handlePaymentSuccess={handlePaymentSuccess}
+          />
         </div>
-      </Grid>}
-      <Grid conatianer style={{ margin: "30px 0px", backgroundColor:"#e2f9f0", padding:"12px 8px" }}>
-        <div className="cart__item-total">
-          <p style={{ margin: 0 }}>Item Total</p>
-          <p style={{ margin: 0 }}>₹ {itemPrice}</p>
-        </div>
-        <div className="cart__taxes">
-          <p style={{ margin: 0 }}>Taxes and charges</p>
-          <p style={{ margin: 0 }}>₹ {taxAndCharge}</p>
-        </div>
-        <div className="cart__convenienceFee">
-          <p style={{ margin: 0 }}>Convenience Fee</p>
-          <p style={{ margin: 0 }}>₹ {convenienceFee}</p>
-        </div>
-        <div className="cart__total">
-          <h4>Total</h4>
-          <h4>₹ {totalPrice}</h4>
-        </div>
-      </Grid>
-      <div className="cart__checkout-button">
-        <Button
-          className="checkout-btn"
-          variant="text"
-          style={{
-            backgroundColor: "#20CE88",
-            borderRadius: "8px",
-            width: "85VW",
-            margin: "10px 10px",
-          }}
-        >
-          CHECKOUT
-          <ArrowRightAltIcon />
-        </Button>
-      </div>
+      )}
     </>
   );
 };

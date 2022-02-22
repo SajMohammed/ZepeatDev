@@ -34,7 +34,7 @@ const CartItem = ({item, handleToggleCart, getQuantity, setIsQuantityChanged}) =
                     <span style={{backgroundColor:'#F5F5F5',border:'none',display:'flex',alignItems:'center', justifyContent:'center'}}>{quantity}</span>
                     <Button style={{backgroundColor:'#F5F5F5', border:'none'}} onClick={handleQuantityIncrement}>+</Button>
                 </ButtonGroup>
-                <DeleteIcon fontSize="small" onClick={() => handleToggleCart(item.id)} style={{ backgroundColor:'#F5F5F5', height:'38px', width:'32px', color:'#BBBBBB'}}/>
+                <DeleteIcon fontSize="small" onClick={() => handleToggleCart(item)} style={{ backgroundColor:'#F5F5F5', height:'38px', width:'32px', color:'#BBBBBB'}}/>
             </div>
         </div>
         <div className="cartitem__container-image">
