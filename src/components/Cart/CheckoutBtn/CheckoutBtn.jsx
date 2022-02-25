@@ -43,22 +43,14 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
         const dbWriteToPartnersCheckout =  async() => {
 
             await setDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS, "Checkouts", id),{
-                Cart : items
-                // .map((item) => [{
-                    // Barcode:"111111",
-                    // Category: item.Category,
-                    // ImageURL:item.ImageURL,
-                    // MRP:item.MRP,
-                    // Name: item.Name,
-                    // SellingPrice:item.SellingPrice,
-                    // UID:"001"
-                ,
+                Cart : items,
                 Date: date,
                 Name: localStorage.getItem("customerName"),
                 SlNo:"00",
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
-                CustomerUID:userId
+                CustomerUID:userId,
+                TotalAmount: Number(localStorage.getItem("totalAmount"))
             })
         }
 
@@ -66,22 +58,14 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
             
 
             await setDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS, "Checkouts", id),{
-                Cart : items
-                // .map((item) => [{
-                    // Barcode:"111111",
-                    // Category: item.Category,
-                    // ImageURL:item.ImageURL,
-                    // MRP:item.MRP,
-                    // Name: item.Name,
-                    // SellingPrice:item.SellingPrice,
-                    // UID:"001"
-                ,
+                Cart : items,
                 Date: date,
                 Name: localStorage.getItem("customerName"),
                 SlNo:"00",
                 PaymentStatus: "Failed",
                 PaymentMethod: "Razorpay",
-                CustomerUID:userId
+                CustomerUID:userId,
+                TotalAmount: Number(localStorage.getItem("totalAmount"))
             })
             alert("Payment Failed");
         }
