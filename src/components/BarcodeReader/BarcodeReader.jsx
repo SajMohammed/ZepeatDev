@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import PhoneAuth from "../PhoneAuth/PhoneAuth";
+import { Button, TextField } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 
-const BarcodeReader = ({toggleScanner, populateData}) => {
+const BarcodeReader = ({toggleScanner, populateData, handleBarcodeInput}) => {
+  const [profileVerified, setprofileVerified] = useState(false);
+  const [barcodeInput, setBarcodeInput] = useState("");
+    useEffect(() => {
+        if (!localStorage.getItem("localStorageUserId")) {
+            setprofileVerified(true);
+        } 
+      }, [])
+
     const [data, setData] = useState("Data");
     useEffect(() => {
     const html5QrCode = new Html5Qrcode("customReader");
@@ -41,6 +52,11 @@ const BarcodeReader = ({toggleScanner, populateData}) => {
     //html5QrCode.start({ facingMode: { exact: "environment"} }, config, qrCodeSuccessCallback);
   }, []);
 
+  const handleBarcode = () => {
+    console.log(barcodeInput, "clicked");
+    handleBarcodeInput(barcodeInput);
+  }
+
   return (
     <div className="container" style={{ height: "100vh" }}>
       <div
@@ -53,7 +69,19 @@ const BarcodeReader = ({toggleScanner, populateData}) => {
       
         Barcode : {data}    
       </div> */}
-    </div>
+      { profileVerified &&  <PhoneAuth open={true}/>}
+      <div className="cart__manualbarcode-container" >
+            <form >
+              <div>
+              <TextField id="outlined-basic" label="or enter barcode here" variant="outlined" onChange={(e) => setBarcodeInput(e.target.value)} style={{marginBottom:"10px"}} />
+              <Button variant="contained" onClick={handleBarcode} endIcon={<SearchIcon />} style={{backgroundColor: "#20ce88"}}>
+                Search
+              </Button>
+              
+              </div>   
+            </form>
+          </div>
+    </div> 
   );
 };
 

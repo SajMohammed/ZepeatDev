@@ -3,9 +3,9 @@ import { BottomSheet, SheetContent } from "react-spring-bottom-sheet";
 import TextField from "@mui/material/TextField";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
-// import db from "./firebase";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
 
 // if setting up the CSS is tricky, you can add this to your page somewhere:
 // <link rel="stylesheet" href="https://unpkg.com/react-spring-bottom-sheet/dist/style.css" crossorigin="anonymous">
@@ -13,7 +13,7 @@ import "react-spring-bottom-sheet/dist/style.css";
 import { Button, InputAdornment } from "@mui/material";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
-const PhoneAuth = ({ open, getUserId}) => {
+const PhoneAuth = ({ open }) => {
 
   const [userName, setCustomerName] = useState()
   const [phoneNumberInput, setPhoneNumberInput] = useState();
@@ -72,12 +72,13 @@ const PhoneAuth = ({ open, getUserId}) => {
     const user = result.user;
     console.log(JSON.stringify(user));
     alert("user is verified");
-    localStorage.setItem("localStorageUserId", user.uid);
-    getUserId(user.uid);
     setShowWelcome(true);
+    localStorage.setItem("localStorageUserId", user.uid);
+    localStorage.setItem("localStorageUsername", userName);
+    // getUserId(user.uid); to set useContext (callback function to set value)
     //Writing to customer db
     setDoc(doc(db, "Customers",user.uid),{
-      Interests: "Travelling",
+      Interests: "Shopping",
       LoginTime: date,
       MobNumber: user.phoneNumber,
       Name: userName,
@@ -119,7 +120,7 @@ const PhoneAuth = ({ open, getUserId}) => {
     {/* <button onClick={() => setSignInOpen(true)}>Open</button> */}
     <BottomSheet open={signInOpen}>
     {/* <BottomSheet open={true}> */}
-    {showWelcome? <div className="bottomsheet__welcomebox" >
+    {showWelcome ? <div className="bottomsheet__welcomebox" >
       <CloseOutlinedIcon onClick={() => setSignInOpen(false)}  style={{ margin: "0px 20px", padding: "20px 10px" }}/>
         <h1 style={{backgroundColor:"#20CE88", padding:"12px"}}>Hi {userName},</h1>
         <div className="message__container" style={{ margin: "2px 20px", padding: "2px 20px", marginBottom:"30px", marginLeft:"10px", backgroundColor:"#e2f9f0", borderRadius:"15px" }}>
@@ -188,7 +189,7 @@ const PhoneAuth = ({ open, getUserId}) => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <PersonOutlineIcon />
+                  <SmsOutlinedIcon />
                 </InputAdornment>
               ),
             }}

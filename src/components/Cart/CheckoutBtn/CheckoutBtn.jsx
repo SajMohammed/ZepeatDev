@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@material-ui/core";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { db } from "../../../firebase-config";
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, getDoc, setDoc } from "firebase/firestore"; 
 import { nanoid } from 'nanoid';
 import './checkoutBtn.css';
 
@@ -25,9 +25,15 @@ const date = new Date();
 
 const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
 
+    const [userId, setUserId] = useState(localStorage.getItem("localStorageUserId"));
+    const [partnerFirestoreIdLS, setPartnerFirestoreIdLS] = useState(localStorage.getItem("partnerFirestoreId"));
+    const [brandFirestoreIdLS, setBrandFirestoreIdLS] = useState(localStorage.getItem("brandFirestoreId"));
+    let partnerPID;
+    let brandBID;
+
     const handleRazorPay = async (e) => {
         e.preventDefault();
-        const id = nanoid(5);
+        const id = nanoid(20);
         const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
         if (!res) {
 			alert('Razorpay SDK failed to load. Are you online?')
@@ -36,7 +42,7 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
 
         const dbWriteToPartnersCheckout =  async() => {
 
-            await setDoc(doc(db, "Partners","VXM509inNCe8tZEBz1RD","Brands-MoT","iuu6AvatBJfqc9Mtn4Zj","Checkouts",id),{
+            await setDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS, "Checkouts", id),{
                 Cart : items
                 // .map((item) => [{
                     // Barcode:"111111",
@@ -48,49 +54,76 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                     // UID:"001"
                 ,
                 Date: date,
-                Name: "Cookies",
-                SlNo:"03",
+                Name: localStorage.getItem("customerName"),
+                SlNo:"00",
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
-                CustomerUID:"C03"
+                CustomerUID:userId
             })
         }
 
-        const dbWriteToGlobalCheckoutBrands = async () => {
+        const dbWriteToPartnersCheckoutUnsuccessful =  async() => {
+            
+
+            await setDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS, "Checkouts", id),{
+                Cart : items
+                // .map((item) => [{
+                    // Barcode:"111111",
+                    // Category: item.Category,
+                    // ImageURL:item.ImageURL,
+                    // MRP:item.MRP,
+                    // Name: item.Name,
+                    // SellingPrice:item.SellingPrice,
+                    // UID:"001"
+                ,
+                Date: date,
+                Name: localStorage.getItem("customerName"),
+                SlNo:"00",
+                PaymentStatus: "Failed",
+                PaymentMethod: "Razorpay",
+                CustomerUID:userId
+            })
+            alert("Payment Failed");
+        }
+
+        const dbWriteToGlobalCheckoutBrands = async (partnerPID) => {
             await setDoc(doc(db, "Global-Checkouts-Brands","PsZkEJjiRffS0LZxRh53","Customers",id),{
-                Cart : [{
-                    Barcode:"00000000",
-                    Category: "FMCG",
-                    ImageURL:"",
-                    MRP:25,
-                    Name: "Cookies",
-                    SellingPrice:27,
-                    ProductPID:"001"
-                }],
-                PartnerPID:"P001",
+                Cart : items,
+                PartnerPID: partnerPID,
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
-                UID:"C03",
-                TotalAmount:103
+                UID:userId,
+                TotalAmount: Number(localStorage.getItem("totalAmount"))
             })
         }
 
-        const dbWriteToCustomersCheckout = async() => {
-            await setDoc(doc(db, "Customers","01","Checkouts","01006"),{
-                Cart : [{
-                    Barcode:"00000000",
-                    Category: "FMCG",
-                    ImageURL:"",
-                    MRP:25,
-                    Name: "Cookies",
-                    SellingPrice:27,
-                    UID:"001"
-                }],
-                PartnerPID:"P001",
+        const dbWriteToCustomersCheckout = async(partnerPID, brandBID) => {
+
+            // const partnerDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS));
+            // if (partnerDocSnap.exists()) {
+            //     console.log("Document data:", partnerDocSnap.data());
+            //     partnerPID = partnerDocSnap.data().PartnerPID
+            //   } else {
+            //     // doc.data() will be undefined in this case
+            //     console.log("No such document!");
+            //   }
+
+            // const brandDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS));
+            // if (brandDocSnap.exists()) {
+            //     console.log("Document data:", brandDocSnap.data());
+            //     brandBID = brandDocSnap.data().BrandBID
+            //   } else {
+            //     // doc.data() will be undefined in this case
+            //     console.log("No such document!");
+            //   }
+
+            await setDoc(doc(db, "Customers",userId,"Checkouts",id),{
+                Cart : items,
+                PartnerPID: partnerPID,
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
-                Time:"Feb 20",
-                BrandBID:"B01",
+                Time: date,
+                BrandBID: brandBID,
                 SKUCounter: [{
                     counter:"0",
                     LessThan6: true
@@ -110,21 +143,46 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                 currency: "INR",
                 name: "Zepeat",
                 description: "your checkout buddy",
-                handler: function (response) {
-                    // alert(response.razorpay_payment_id);
+                handler: async function (response) {
+                    alert(response.razorpay_payment_id);
+                    console.log(response);
                     // alert(response.razorpay_order_id)
 				    // alert(response.razorpay_signature)
+                    // userId = localStorage.getItem("localStorageUserId");
+                    if (response.razorpay_payment_id) {
+                        const partnerDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS));
+                        if (partnerDocSnap.exists()) {
+                            console.log("Document data:", partnerDocSnap.data());
+                            partnerPID = partnerDocSnap.data().PartnerPID
+                          } else {
+                            // doc.data() will be undefined in this case
+                            console.log("No such document!");
+                          }
+            
+                        const brandDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS));
+                        if (brandDocSnap.exists()) {
+                            console.log("Document data:", brandDocSnap.data());
+                            brandBID = brandDocSnap.data().BrandBID
+                          } else {
+                            // doc.data() will be undefined in this case
+                            console.log("No such document!");
+                          }
 
-                    dbWriteToPartnersCheckout();
-                    dbWriteToGlobalCheckoutBrands();
-                    dbWriteToCustomersCheckout();
-                    handlePaymentSuccess();
+                        dbWriteToPartnersCheckout();
+                        dbWriteToGlobalCheckoutBrands(partnerPID);
+                        dbWriteToCustomersCheckout(partnerPID, brandBID);
+                        handlePaymentSuccess();
+
+                    } else {
+                        alert("failed");
+                        dbWriteToPartnersCheckoutUnsuccessful();
+                    }
 
                 },
                 prefill: {
-                    // name:"SajMo",
-                    // contact: "1234567891",
-                    // email:"mail2sajmo@gmail.com"
+                    name:"SajMo",
+                    contact: "1234567891",
+                    email:"mail2sajmo@gmail.com"
                 },
                 theme: {
                     color:"#20CE88"

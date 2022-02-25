@@ -25,7 +25,12 @@
     margin: 0;
 }
 
-
+.cart__manualbarcode-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 30px;
+}
 
 /* .cart__isEmptyCard {
     display:"flex";

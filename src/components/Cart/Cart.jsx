@@ -11,6 +11,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CheckoutBtn from "./CheckoutBtn/CheckoutBtn";
 import PaymentSuccess from "./PaymentSuccess";
+import { Paper } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import SearchIcon from '@mui/icons-material/Search';
+
+// import Paper from '@mui/material/Paper';
+// import IconButton from '@mui/material/IconButton';
+// import SearchIcon from '@mui/icons-material/Search';
+// import InputBase from '@mui/material/InputBase';
 
 // const items = [
 //   { id: 1, name: "Nivya Body Cream", category: "Self Grooming", price: "250" },
@@ -29,6 +38,7 @@ const Cart = () => {
   const [scanner, setScanner] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  // const [barcodeInput, setBarcodeInput] = useState("");
 
   const [qtyKg, setqtyKg] = useState(0);
   const [qtyGm, setqtyGm] = useState(0);
@@ -49,8 +59,9 @@ const Cart = () => {
       setConvenienceFee(0);
     } else {
       console.log(id);
-      setItems(items.slice(items.indexOf(id, 1)));
-      // setItems((item) => item.filter((item) => item.key !== id.key))
+      // setItems(items.slice(items.indexOf(id, 1)));
+      console.log("id",id);
+      setItems(items.filter((item) => item.id != id.id))
       setBarcodeData("");
       setConvenienceFee(0);
       //   setItems([...items], items.splice(items.findIndex( v => v.id == id), 1));
@@ -186,6 +197,7 @@ const Cart = () => {
     setItemPrice(totSellingPrice.toFixed(2));
     setTaxAndCharge(taxAndCharges);
     setTotalPrice(totalP.toFixed(2));
+    localStorage.setItem("totalAmount",totalP.toFixed(2));
 
     console.log(items);
   }, [items, isQuantityChanged]);
@@ -211,6 +223,11 @@ const Cart = () => {
   const handlePaymentSuccess = () => {
     setPaymentSuccess(true);
   };
+
+  const handleBarcodeInput = (value) => {
+    // console.log(barcodeInput, "clicked");
+    setBarcodeData(value);
+  }
 
   return (
     <>
@@ -239,9 +256,23 @@ const Cart = () => {
             <BarcodeReader
               toggleScanner={toggleScanner}
               populateData={populateData}
+              handleBarcodeInput={handleBarcodeInput}
             />
           )}
           <ToastContainer />
+
+          {/* <div className="cart__manualbarcode-container" >
+            <form >
+              <div>
+              <TextField id="outlined-basic" label="or enter barcode here" variant="outlined" onChange={(e) => setBarcodeInput(e.target.value)} style={{marginBottom:"10px"}} />
+              <Button variant="contained" onClick={handleBarcodeInput} endIcon={<SearchIcon />} style={{backgroundColor: "#20ce88"}}>
+                Search
+              </Button>
+              
+              </div>   
+            </form>
+          </div> */}
+
           <Grid container justifyContent="center" spacing={1}>
             {items.map((item) => (
               <Grid item key={item.id} xs={12}>

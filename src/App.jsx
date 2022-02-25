@@ -13,26 +13,21 @@ import Home from "./pages/Home";
 import Checkout from "./pages/Checkout";
 import PhoneAuth from "./components/PhoneAuth/PhoneAuth";
 import { UserContext } from "./contexts/UserContext"
+import Profile from "./pages/Profile";
+import MyAccount from "./components/Profile/MyAccount";
+import MyPurchases from "./components/Profile/MyPurchases";
+import LoyaltyPartners from "./components/Profile/LoyaltyPartners";
 
 
 function App() {
-  const [showPhoneAuth, setShowPhoneAuth] = useState(true);
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
     // localStorage.removeItem("localStorageUserId");
+    // localStorage.removeItem("localStorageUsername");
     console.log(localStorage.getItem("localStorageUserId"));
-    if (localStorage.getItem("localStorageUserId") != null) {
-      console.log("inside if of localStorage")
-      // setShowPhoneAuth(false);
-    }else {
-      // setShowPhoneAuth(true); 
-    }
-  
     console.log("from App userId state :",userId);
-    console.log("userId useState :", userId)
-    
-    
+  
   }, [])
   
   const getUserId = (value)=>{
@@ -43,13 +38,14 @@ function App() {
     <Router>
       <div className="App">
         <UserContext.Provider value={userId}>
-          <Navbar />
-          <Header title="Zepeat X MoT" />
           <Routes>
             <Route path="/" element={<Home authOpen={true}/>} />
             <Route path="/cart" element={<Checkout />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/account" element={<MyAccount />} />
+            <Route path="/profile/purchases" element={<MyPurchases />} />
+            <Route path="/profile/partners" element={<LoyaltyPartners />} />
           </Routes>
-          <PhoneAuth open={showPhoneAuth} getUserId={getUserId}/>
         </UserContext.Provider>
       </div>
     </Router>

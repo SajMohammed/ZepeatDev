@@ -3,6 +3,7 @@ import React from 'react';
 const Brand = ({ id, image, handleBrandOnClick }) => {
     const handleOnClick = () => {
         handleBrandOnClick(id);
+        localStorage.setItem("brandFirestoreId", id);
     }
   return (
 

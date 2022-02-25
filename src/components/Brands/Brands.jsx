@@ -40,7 +40,7 @@ const Brands = ({ partnerFirestoreId}) => {
           
           const q = query(
               brandsCollectionRef
-            //   where("BrandBID", "==", "100101")
+            //   ,where("BrandBID", "==", "100101")
               );
               const docSnap = await getDocs(q);
               docSnap.forEach((doc) => {
