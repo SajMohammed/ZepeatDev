@@ -30,6 +30,8 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
     const [brandFirestoreIdLS, setBrandFirestoreIdLS] = useState(localStorage.getItem("brandFirestoreId"));
     let partnerPID;
     let brandBID;
+    let partnerName;
+    let brandName;
 
     const handleRazorPay = async (e) => {
         e.preventDefault();
@@ -39,6 +41,26 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
 			alert('Razorpay SDK failed to load. Are you online?')
 			return
 		}
+
+        const partnerDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS));
+        if (partnerDocSnap.exists()) {
+            console.log("Document data:", partnerDocSnap.data());
+            partnerPID = partnerDocSnap.data().PartnerPID
+            partnerName = partnerDocSnap.data().PartnerName
+            } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            }
+
+        const brandDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS));
+        if (brandDocSnap.exists()) {
+            console.log("Document data:", brandDocSnap.data());
+            brandBID = brandDocSnap.data().BrandBID
+            brandName = brandDocSnap.data().BrandName
+            } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            }
 
         const dbWriteToPartnersCheckout =  async() => {
 
@@ -70,10 +92,11 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
             alert("Payment Failed");
         }
 
-        const dbWriteToGlobalCheckoutBrands = async (partnerPID) => {
+        const dbWriteToGlobalCheckoutBrands = async (partnerPID, partnerName) => {
             await setDoc(doc(db, "Global-Checkouts-Brands","PsZkEJjiRffS0LZxRh53","Customers",id),{
                 Cart : items,
                 PartnerPID: partnerPID,
+                PartnerName:partnerName,
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
                 UID:userId,
@@ -81,41 +104,64 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
             })
         }
 
-        const dbWriteToCustomersCheckout = async(partnerPID, brandBID) => {
+        const dbWriteToGlobalCheckoutBrandsUnsuccessful = async (partnerPID, partnerName) => {
+            await setDoc(doc(db, "Global-Checkouts-Brands","PsZkEJjiRffS0LZxRh53","Customers",id),{
+                Cart : items,
+                PartnerPID: partnerPID,
+                PartnerName:partnerName,
+                PaymentStatus: "Failed",
+                PaymentMethod: "Razorpay",
+                UID:userId,
+                TotalAmount: Number(localStorage.getItem("totalAmount"))
+            })
+        }
 
-            // const partnerDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS));
-            // if (partnerDocSnap.exists()) {
-            //     console.log("Document data:", partnerDocSnap.data());
-            //     partnerPID = partnerDocSnap.data().PartnerPID
-            //   } else {
-            //     // doc.data() will be undefined in this case
-            //     console.log("No such document!");
-            //   }
-
-            // const brandDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS));
-            // if (brandDocSnap.exists()) {
-            //     console.log("Document data:", brandDocSnap.data());
-            //     brandBID = brandDocSnap.data().BrandBID
-            //   } else {
-            //     // doc.data() will be undefined in this case
-            //     console.log("No such document!");
-            //   }
+        const dbWriteToCustomersCheckout = async(partnerPID, brandBID, partnerName, brandName) => {
 
             await setDoc(doc(db, "Customers",userId,"Checkouts",id),{
                 Cart : items,
                 PartnerPID: partnerPID,
+                PartnerName:partnerName,
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
                 Time: date,
                 BrandBID: brandBID,
-                SKUCounter: [{
-                    counter:"0",
-                    LessThan6: true
-                }]
-                
+                BrandName: brandName,
+                TotalAmount: Number(localStorage.getItem("totalAmount"))
                 
             })
         }
+
+        const dbWriteToCustomersCheckoutUnsuccessful = async(partnerPID, brandBID) => {
+
+            await setDoc(doc(db, "Customers",userId,"Checkouts",id),{
+                Cart : items,
+                PartnerPID: partnerPID,
+                PartnerName:partnerName,
+                PaymentStatus: "Failed",
+                PaymentMethod: "Razorpay",
+                Time: date,
+                BrandBID: brandBID,
+                BrandName: brandName,
+                TotalAmount: Number(localStorage.getItem("totalAmount"))
+                
+            })
+        }
+
+        // const dbWriteToCustomersLoyalty = async() => {
+        //     await setDoc(doc(db, "Customers",userId,"Loyalty",id),{
+                
+        //         PartnerPID: partnerPID,
+        //         PartnerName:partnerName,
+        //         PaymentStatus: "Failed",
+        //         PaymentMethod: "Razorpay",
+        //         Time: date,
+        //         BrandBID: brandBID,
+        //         BrandName: brandName,
+        //         TotalAmount: Number(localStorage.getItem("totalAmount"))
+                
+        //     })
+        // }
 
         if (amount === "") {
             alert("enter amount");
@@ -133,34 +179,19 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                     // alert(response.razorpay_order_id)
 				    // alert(response.razorpay_signature)
                     // userId = localStorage.getItem("localStorageUserId");
-                    if (response.razorpay_payment_id) {
-                        const partnerDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS));
-                        if (partnerDocSnap.exists()) {
-                            console.log("Document data:", partnerDocSnap.data());
-                            partnerPID = partnerDocSnap.data().PartnerPID
-                          } else {
-                            // doc.data() will be undefined in this case
-                            console.log("No such document!");
-                          }
-            
-                        const brandDocSnap = await getDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS));
-                        if (brandDocSnap.exists()) {
-                            console.log("Document data:", brandDocSnap.data());
-                            brandBID = brandDocSnap.data().BrandBID
-                          } else {
-                            // doc.data() will be undefined in this case
-                            console.log("No such document!");
-                          }
+                    // if (response.razorpay_payment_id) {
+                        
 
                         dbWriteToPartnersCheckout();
-                        dbWriteToGlobalCheckoutBrands(partnerPID);
-                        dbWriteToCustomersCheckout(partnerPID, brandBID);
+                        dbWriteToGlobalCheckoutBrands(partnerPID, partnerName);
+                        dbWriteToCustomersCheckout(partnerPID, brandBID, partnerName, brandName);
+                        // dbWriteToCustomersLoyalty();
                         handlePaymentSuccess();
 
-                    } else {
-                        alert("failed");
-                        dbWriteToPartnersCheckoutUnsuccessful();
-                    }
+                    // } else {
+                    //     alert("failed");
+                    //     dbWriteToPartnersCheckoutUnsuccessful();
+                    // }
 
                 },
                 prefill: {
@@ -175,6 +206,20 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
 
             var pay = new window.Razorpay(options);
             pay.open();
+
+            pay.on('payment.failed', function (response){
+                alert(response.error.code);
+                // alert(response.error.description);
+                // alert(response.error.source);
+                // alert(response.error.step);
+                // alert(response.error.reason);
+                // alert(response.error.metadata.order_id);
+                // alert(response.error.metadata.payment_id);
+                console.log("handling fails",partnerPID, brandBID);
+                dbWriteToPartnersCheckoutUnsuccessful();
+                dbWriteToGlobalCheckoutBrandsUnsuccessful(partnerPID, partnerName);
+                dbWriteToCustomersCheckoutUnsuccessful(partnerPID, brandBID, partnerName, brandName);
+        })
         }
     }
 

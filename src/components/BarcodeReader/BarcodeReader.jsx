@@ -3,6 +3,8 @@ import { Html5Qrcode } from "html5-qrcode";
 import PhoneAuth from "../PhoneAuth/PhoneAuth";
 import { Button, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 
 const BarcodeReader = ({toggleScanner, populateData, handleBarcodeInput}) => {
   const [profileVerified, setprofileVerified] = useState(false);
@@ -55,10 +57,12 @@ const BarcodeReader = ({toggleScanner, populateData, handleBarcodeInput}) => {
   const handleBarcode = () => {
     console.log(barcodeInput, "clicked");
     handleBarcodeInput(barcodeInput);
+    toggleScanner(false);
   }
 
   return (
     <div className="container" style={{ height: "100vh" }}>
+       <CancelIcon fontSize='large' onClick={() => toggleScanner(false)}  style={{ color: "rgb(228 116 116)", zIndex: "1000", position: "absolute", marginTop: "4px" }}/>
       <div
         id="customReader"
         style={{ width:"400px" }}>

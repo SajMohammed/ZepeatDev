@@ -76,9 +76,10 @@ const Brands = ({ partnerFirestoreId}) => {
     }
 
     
-    const handleBrandOnClick = (id) => {
+    const handleBrandOnClick = (id, image) => {
         
         localStorage.setItem("brandId", `${id}`);
+        localStorage.setItem("brandImage", `${image}`);
         console.log("clicked Brand : ",id);
     }
     

@@ -10,6 +10,7 @@ const Navbar = () => {
   const [showAvatar, setShowAvatar] = useState(localStorage.getItem("localStorageUsername")  ? true : false)
   let initialVal = localStorage.getItem("localStorageUsername");
   const [initial, setInitial] = useState(initialVal ? initialVal.charAt(0) : "");
+
   useEffect(() => {
     console.log("Initial",initialVal)
   

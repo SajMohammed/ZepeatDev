@@ -233,8 +233,8 @@ const Cart = () => {
     <>
       {paymentSuccess ? (
         <div>
-          <Grid container justifyContent="center" spacing={1}>
-            {items.map((item) => (
+          <div container justifyContent="center" spacing={1}>
+            {items.map((item) => ( 
               <Grid item key={item.id} xs={12}>
                 {
                   <CartItem
@@ -246,7 +246,7 @@ const Cart = () => {
                 }
               </Grid>
             ))}
-          </Grid>
+          </div>
           <PaymentSuccess />
         </div>
       ) : (
