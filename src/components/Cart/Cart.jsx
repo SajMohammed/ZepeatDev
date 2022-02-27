@@ -99,6 +99,7 @@ const Cart = () => {
               SellingPrice: doc.data().SellingPrice,
               ImageURL: doc.data().ImageURL,
               Quantity: 1,
+              BarcodeNumb: doc.data().BarcodeNumb
             },
           ]);
         } else {
@@ -183,7 +184,7 @@ const Cart = () => {
           totSellingPrice + Number(taxAndCharges) + Number(convenienceFee)
         );
       } else {
-        totSellingPrice += Number(item.SellingPrice * item.Quantity);
+        totSellingPrice += Number(item.SellingPrice.toFixed(2) * item.Quantity);
         taxAndCharges = (0.18 * Number(totSellingPrice)).toFixed(2);
         setConvenienceFee(2);
         totalP = Number(
@@ -196,7 +197,7 @@ const Cart = () => {
 
     setItemPrice(totSellingPrice.toFixed(2));
     setTaxAndCharge(taxAndCharges);
-    setTotalPrice(totalP.toFixed(2));
+    setTotalPrice(totalP);
     localStorage.setItem("totalAmount",totalP.toFixed(2));
 
     console.log(items);

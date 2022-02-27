@@ -7,7 +7,7 @@ import {  db } from '../../firebase-config';
 const MyAccount = () => {
 
     const [name, setName] = useState("");
-    const [phone, setPhone] = useState("")
+    const [phone, setPhone] = useState("");
     useEffect(() => {
         const customerID = localStorage.getItem("localStorageUserId");
         const getCusotmerData = async () => {

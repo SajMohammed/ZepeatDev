@@ -32,6 +32,9 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
     let brandBID;
     let partnerName;
     let brandName;
+    let customerName;
+    let customerPhone;
+    let customerUID;
 
     const handleRazorPay = async (e) => {
         e.preventDefault();
@@ -62,7 +65,19 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
             console.log("No such document!");
             }
 
+        const customerDocSnap = await getDoc(doc(db, "Customers", userId));
+        if (customerDocSnap.exists()) {
+            console.log("Customer Doc data:", customerDocSnap.data());
+            customerName = customerDocSnap.data().Name
+            customerPhone = customerDocSnap.data().MobNumber
+            customerUID = customerDocSnap.data().UID
+            } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            }
         const dbWriteToPartnersCheckout =  async() => {
+
+            console.log("before dbWriteToPartnersCheckout", items)
 
             await setDoc(doc(db, "Partners", partnerFirestoreIdLS, "Brands-MoT", brandFirestoreIdLS, "Checkouts", id),{
                 Cart : items,
@@ -71,9 +86,12 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                 SlNo:"00",
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
-                CustomerUID:userId,
+                CustomerUID: userId,
                 TotalAmount: Number(localStorage.getItem("totalAmount"))
             })
+
+            console.log("after dbWriteToPartnersCheckout", items)
+
         }
 
         const dbWriteToPartnersCheckoutUnsuccessful =  async() => {
@@ -93,6 +111,8 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
         }
 
         const dbWriteToGlobalCheckoutBrands = async (partnerPID, partnerName) => {
+            console.log("before dbWriteToGlobalCheckoutBrands", items)
+
             await setDoc(doc(db, "Global-Checkouts-Brands","PsZkEJjiRffS0LZxRh53","Customers",id),{
                 Cart : items,
                 PartnerPID: partnerPID,
@@ -100,8 +120,13 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                 PaymentStatus: "Success",
                 PaymentMethod: "Razorpay",
                 UID:userId,
-                TotalAmount: Number(localStorage.getItem("totalAmount"))
+                TotalAmount: Number(localStorage.getItem("totalAmount")),
+                CustomerUID:userId,
+                CustomerName: localStorage.getItem("customerName")
             })
+
+            console.log("after dbWriteToGlobalCheckoutBrands", items)
+
         }
 
         const dbWriteToGlobalCheckoutBrandsUnsuccessful = async (partnerPID, partnerName) => {
@@ -112,11 +137,16 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                 PaymentStatus: "Failed",
                 PaymentMethod: "Razorpay",
                 UID:userId,
-                TotalAmount: Number(localStorage.getItem("totalAmount"))
+                TotalAmount: Number(localStorage.getItem("totalAmount")),
+                CustomerUID:userId,
+                CustomerName: localStorage.getItem("customerName")
             })
         }
 
         const dbWriteToCustomersCheckout = async(partnerPID, brandBID, partnerName, brandName) => {
+
+            console.log("before dbWriteToCustomersCheckout", items)
+
 
             await setDoc(doc(db, "Customers",userId,"Checkouts",id),{
                 Cart : items,
@@ -130,6 +160,9 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                 TotalAmount: Number(localStorage.getItem("totalAmount"))
                 
             })
+
+            console.log("after dbWriteToCustomersCheckout", items)
+
         }
 
         const dbWriteToCustomersCheckoutUnsuccessful = async(partnerPID, brandBID) => {
@@ -195,9 +228,9 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
 
                 },
                 prefill: {
-                    name:"SajMo",
-                    contact: "1234567891",
-                    email:"mail2sajmo@gmail.com"
+                    name:localStorage.getItem("customerName"),
+                    contact: customerPhone,
+                    email:"checkouts@zepeat.app"
                 },
                 theme: {
                     color:"#20CE88"

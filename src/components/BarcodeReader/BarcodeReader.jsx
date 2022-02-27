@@ -62,7 +62,7 @@ const BarcodeReader = ({toggleScanner, populateData, handleBarcodeInput}) => {
 
   return (
     <div className="container" style={{ height: "100vh" }}>
-       <CancelIcon fontSize='large' onClick={() => toggleScanner(false)}  style={{ color: "rgb(228 116 116)", zIndex: "1000", position: "absolute", marginTop: "4px" }}/>
+       <CancelIcon fontSize='large' onClick={() => toggleScanner(false)}  style={{ color: "rgb(228 116 116)", zIndex: "2", position: "absolute", marginTop: "4px" }}/>
       <div
         id="customReader"
         style={{ width:"400px" }}>

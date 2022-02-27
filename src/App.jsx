@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import MyAccount from "./components/Profile/MyAccount";
 import MyPurchases from "./components/Profile/MyPurchases";
 import LoyaltyPartners from "./components/Profile/LoyaltyPartners";
+import ScrollToTop from "./utils/ScrollToTop";
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop>
       <div className="App">
         <UserContext.Provider value={userId}>
           <Routes>
@@ -48,6 +50,7 @@ function App() {
           </Routes>
         </UserContext.Provider>
       </div>
+      </ScrollToTop>
     </Router>
   );
 }

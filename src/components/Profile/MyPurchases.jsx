@@ -1,5 +1,5 @@
 import { Grid } from '@material-ui/core';
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { db } from "../../firebase-config";
 
