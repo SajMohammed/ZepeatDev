@@ -15,7 +15,7 @@ const PurchaseItem = ({ item }) => {
                 <div className="brand-container" style={{display:"flex", alignItems:"flex-start", flexDirection:"column"}}>
                 <h3 style={{margin:0}}>{item.BrandName}</h3>
                 <h3 style={{margin:0}}>{item.PartnerName}</h3>
-                <p>
+                <p style={{color:"var(--color-secondary)"}}>
 
                     {item.Cart.map((cart) => (
                     <div style={{margin:0,display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
@@ -26,7 +26,7 @@ const PurchaseItem = ({ item }) => {
                 </p>
                 </div>
                 <div>
-                <p style={{color:"#20CE88", fontWeight:"800"}}>₹ {item.Amount}</p>
+                <p style={{color:"var(--color-secondary)", fontWeight:"800"}}>₹ {item.Amount}</p>
                 <div className={item.PaymentStatus == "Success"? "paymentStatus-success" : "paymentStatus-failed"} style={{}}>
                     <p style={{margin:0}}>{item.PaymentStatus}</p>
                 </div>

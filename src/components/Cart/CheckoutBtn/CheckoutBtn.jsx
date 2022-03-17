@@ -263,7 +263,8 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
           variant="text"
           onClick={handleRazorPay}
           style={{
-            backgroundColor: "#20CE88",
+            backgroundColor: "var(--color-primary)",
+            color:"white",
             borderRadius: "8px",
             width: "85VW",
             margin: "10px 10px",

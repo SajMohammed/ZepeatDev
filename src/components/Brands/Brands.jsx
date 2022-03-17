@@ -91,8 +91,8 @@ const Brands = ({ partnerFirestoreId}) => {
         <div style={{ margin: "24px 26px" }}>
         <div className="brands__container-title" style={{ marginBottom:"32px"}}>
             
-            <h2 style={{color:'#20CE88', cursor:'pointer'}} onClick={toggleBrand}>Brands</h2>
-            <h2 style={{color:'#20CE88', cursor:'pointer'}} onClick={toggleLayout}>Layout</h2>
+            <h2 style={{color:'var(--color-primary)', cursor:'pointer'}} onClick={toggleBrand}>Brands</h2>
+            <h2 style={{color:'var(--color-primary)', cursor:'pointer'}} onClick={toggleLayout}>Layout</h2>
         
         </div>
         { brand ?  <Grid container spacing={2}> 

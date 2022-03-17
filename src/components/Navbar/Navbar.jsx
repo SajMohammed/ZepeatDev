@@ -24,7 +24,7 @@ const Navbar = () => {
             <Link to="/" style={{textDecoration:'none'}}><KeyboardBackspaceIcon style={{color:"black"}}/></Link>
             <div className="navbar__avatarbadge-container" style={{display:'flex', alignItems:'center', gap:'10px'}}>
 
-            { showAvatar && <Avatar sx={{bgcolor:green[300]}}>{initial}</Avatar >}
+            { showAvatar && <Avatar >{initial}</Avatar >}
             <Badge color="secondary" badgeContent={0} showZero>
                 <ShoppingCartOutlinedIcon />
           </Badge>

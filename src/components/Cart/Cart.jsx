@@ -296,8 +296,8 @@ const Cart = () => {
               <div
                 className="cart__isEmptyCard"
                 style={{
-                  color: "#20CE88",
-                  backgroundColor: "#e2f9f0",
+                  color: "black",
+                  backgroundColor: "var(--color-bg)",
                   padding: "12px 55px",
                   borderRadius: "32px",
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px 0px",
@@ -317,7 +317,7 @@ const Cart = () => {
             conatianer
             style={{
               margin: "30px 0px",
-              backgroundColor: "#e2f9f0",
+              backgroundColor: "var(--color-bg)",
               padding: "12px 8px",
             }}
           >

@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react'
 import { Grid } from '@material-ui/core';
 import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
-import React, { useEffect, useState } from 'react'
 import { db } from "../../firebase-config";
 
 import Navbar from '../Navbar/Navbar'
@@ -17,6 +17,7 @@ const MyPurchases = () => {
     const getPurchaseDetails = async () => {
       const purchaseCollectionRef = collection(db, `Customers/${userId}/Checkouts`);
       const q = query(purchaseCollectionRef, where("PartnerPID", "==", "1001"));
+      // const q = query(purchaseCollectionRef, where("PartnerPID", "==", "1001"), orderBy("Time","desc"));
       const purchaseQuerySnap = await getDocs(q);
         purchaseQuerySnap.forEach((doc) => {
           console.log(doc.data().PartnerPID)

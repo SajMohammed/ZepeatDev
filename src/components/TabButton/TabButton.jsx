@@ -42,7 +42,7 @@ const TabButton = () => {
     <Fragment>
 
       <div style={{marginTop:'62px', marginBottom:'24px', marginLeft:'15px', marginRight:'15px'}}>
-          <Button variant="contained" size="medium" style={{borderRadius:'20px',backgroundColor:'#20CE88',color:'white', padding:'8px 40px'}}>
+          <Button variant="contained" size="medium" style={{borderRadius:'20px',backgroundColor:'var(--color-primary)',color:'white', padding:'8px 40px'}}>
             Outlet
           </Button>
           <span> </span>

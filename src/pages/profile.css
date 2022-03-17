@@ -1,5 +1,5 @@
 .profile__header-container {
-    background-color: #2CE588;
+    background-color: var(--color-primary);
     padding: 30px 20px;
     border-radius: 0 0 12px 12px;
 }

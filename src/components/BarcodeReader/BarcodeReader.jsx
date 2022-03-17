@@ -65,7 +65,8 @@ const BarcodeReader = ({toggleScanner, populateData, handleBarcodeInput}) => {
        <CancelIcon fontSize='large' onClick={() => toggleScanner(false)}  style={{ color: "rgb(228 116 116)", zIndex: "2", position: "absolute", marginTop: "4px" }}/>
       <div
         id="customReader"
-        style={{ width:"400px" }}>
+        // style={{ width:"400px" }}>
+        style={{ width:"100vw" }}>
       </div>
       {/* <div
         className="qrData"
@@ -74,7 +75,7 @@ const BarcodeReader = ({toggleScanner, populateData, handleBarcodeInput}) => {
         Barcode : {data}    
       </div> */}
       { profileVerified &&  <PhoneAuth open={true}/>}
-      <div className="cart__manualbarcode-container" >
+      <div className="cart__manualbarcode-container" style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
             <form >
               <div>
               <TextField id="outlined-basic" label="or enter barcode here" variant="outlined" onChange={(e) => setBarcodeInput(e.target.value)} style={{marginBottom:"10px"}} />

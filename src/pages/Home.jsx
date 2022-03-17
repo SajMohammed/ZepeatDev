@@ -40,10 +40,7 @@ const [partnerFirestoreId, setPartnerFirestoreId] = useState("");
     };
     getPartner();
   
-    return () => {
-      
-    }
-  }, [partnerFirestoreId])
+  }, [])
   
 
   return (

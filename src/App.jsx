@@ -18,16 +18,24 @@ import MyAccount from "./components/Profile/MyAccount";
 import MyPurchases from "./components/Profile/MyPurchases";
 import LoyaltyPartners from "./components/Profile/LoyaltyPartners";
 import ScrollToTop from "./utils/ScrollToTop";
+import Preloader from './utils/83548-online-shopping-black-friday.json';
+import Lottie from "lottie-react";
 
 
 function App() {
   const [userId, setUserId] = useState("");
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     // localStorage.removeItem("localStorageUserId");
     // localStorage.removeItem("localStorageUsername");
     console.log(localStorage.getItem("localStorageUserId"));
     console.log("from App userId state :",userId);
+
+    setTimeout(()=> {
+      setLoading(false);
+    }, 3000)
   
   }, [])
   
@@ -39,6 +47,8 @@ function App() {
     <Router>
       <ScrollToTop>
       <div className="App">
+        {
+          loading ?  <Lottie animationData={Preloader} style={{height:'100vh', width:'100vw'}} />:
         <UserContext.Provider value={userId}>
           <Routes>
             <Route path="/" element={<Home authOpen={true}/>} />
@@ -49,6 +59,7 @@ function App() {
             <Route path="/profile/partners" element={<LoyaltyPartners />} />
           </Routes>
         </UserContext.Provider>
+        }
       </div>
       </ScrollToTop>
     </Router>
