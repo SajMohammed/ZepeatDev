@@ -26,7 +26,7 @@ const CartItem = ({item, handleToggleCart, getQuantity, setIsQuantityChanged}) =
             <div className="cartitem__container-details_box">
                 <h3 >{item.Name}</h3>
                 <p>{item.Category}</p>
-                <p style={{color:'#20CE88'}}>₹{item.SellingPrice}</p>
+                <p style={{color:'var(--color-secondary)'}}>₹{item.SellingPrice}</p>
             </div>
             <div className="cartitem__btngroup">
                 <ButtonGroup  size="small" variant="contained" aria-label="outlined primary button group" style={{boxShadow:'none', height:'38px'}}>

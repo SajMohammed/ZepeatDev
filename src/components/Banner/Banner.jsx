@@ -1,14 +1,16 @@
 import React from 'react';
-import { Container, Typography } from '@material-ui/core'
+import { Container, Paper } from '@material-ui/core'
 import BannerImg from '../../assets/motlogo.svg'
 
 const Banner = () => {
   return (
       
       <div className='banner__container' style={{margin:'48px 26px'}}>
+        <Paper elevation="1">
           <Container>
-            <img src={BannerImg}></img>
+            <img src={BannerImg} alt="Partner"></img>
           </Container>
+        </Paper>
           {/* <Container style={{backgroundColor:'#F3F6F8', borderRadius:'32px', width:'324px', height:'430px', padding:'36px 16px', marginTop:'54px'}}>
               <Typography variant='h4' style={{marginBottom:'42px', fontFamily:'Poppins'}}>
                 Your one-stop shop for brands !

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Badge, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Badge, Toolbar } from '@material-ui/core';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Avatar from '@mui/material/Avatar';
-import { green } from '@mui/material/colors';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
@@ -13,13 +12,11 @@ const Navbar = () => {
 
   useEffect(() => {
     console.log("Initial",initialVal)
-  
-    
   }, [])
   
   return (
     <div>
-        <AppBar position="relative" color="inherit">
+        <AppBar position="relative" color="inherit" elevation={0}>
             <Toolbar style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
             <Link to="/" style={{textDecoration:'none'}}><KeyboardBackspaceIcon style={{color:"black"}}/></Link>
             <div className="navbar__avatarbadge-container" style={{display:'flex', alignItems:'center', gap:'10px'}}>
