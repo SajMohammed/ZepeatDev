@@ -6,7 +6,7 @@ const Banner = () => {
   return (
       
       <div className='banner__container' style={{margin:'48px 26px'}}>
-        <Paper elevation="1">
+        <Paper elevation="5">
           <Container>
             <img src={BannerImg} alt="Partner"></img>
           </Container>

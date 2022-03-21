@@ -41,7 +41,7 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
         const id = nanoid(20);
         const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
         if (!res) {
-			alert('Razorpay SDK failed to load. Are you online?')
+			alert('Razorpay SDK failed to load. Please check your connection')
 			return
 		}
 
@@ -196,21 +196,26 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
         //     })
         // }
 
+	const expressData = await fetch('https://mot.zepeat.app/razorpay', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount:amount}) }).then((t) =>
+        // const expressData = await fetch('http://localhost:5000/razorpay', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount:amount}) }).then((t) =>
+			t.json()
+		)
+		console.log(expressData)
         if (amount === "") {
             alert("enter amount");
         } else {
-            var options = {
-                key: process.env.REACT_APP_RAZORPAY_KEY, // Enter the Key ID generated from the Dashboard
-                key_secret: process.env.REACT_APP_RAZORPAY_SECRET_KEY,
-                amount: amount*100, 
-                currency: "INR",
+            const options = {
+                key: 'rzp_test_1qYCToG2cqACsN', // Enter the Key ID generated from the Dashboard
+                key_secret: 'jmhWYiFNupE9uCgZ060KTHHj',
+                amount: expressData.amount.toString(), 
+                order_id: expressData.id,
+                currency: expressData.currency,
                 name: "Zepeat",
                 description: "your checkout buddy",
                 handler: async function (response) {
-                    alert(response.razorpay_payment_id);
-                    console.log(response);
-                    // alert(response.razorpay_order_id)
-				    // alert(response.razorpay_signature)
+                    console.log("razorpay_payment_id : ", response.razorpay_payment_id);
+                    console.log("razorpay_order_id : ", response.razorpay_order_id);
+                    console.log("razorpay_signature : ", response.razorpay_signature);
                     // userId = localStorage.getItem("localStorageUserId");
                     // if (response.razorpay_payment_id) {
                         
@@ -237,7 +242,7 @@ const CheckoutBtn = ({amount, items, handlePaymentSuccess}) => {
                 }
             };
 
-            var pay = new window.Razorpay(options);
+            const pay = new window.Razorpay(options);
             pay.open();
 
             pay.on('payment.failed', function (response){

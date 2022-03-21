@@ -26,7 +26,7 @@ const PurchaseItem = ({ item }) => {
                 </p>
                 </div>
                 <div>
-                <p style={{color:"var(--color-secondary)", fontWeight:"800"}}>₹ {item.Amount}</p>
+                <p style={{ fontWeight:"800"}}>₹ {item.Amount}</p>
                 <div className={item.PaymentStatus == "Success"? "paymentStatus-success" : "paymentStatus-failed"} style={{}}>
                     <p style={{margin:0}}>{item.PaymentStatus}</p>
                 </div>
